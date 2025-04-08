@@ -18,6 +18,7 @@ scale([2, 2, 1]) {
   extruded_shape(steps, step_height, scale_factor * -1, height, svg_file, desired_width);
   
   // Base plate using the SVG shape with offset
+  color("Crimson") {
   translate([0, 0, height]) {
     linear_extrude(height = base_thickness) {
       offset(r = outline_offset) {
@@ -26,6 +27,7 @@ scale([2, 2, 1]) {
         }
       }
     }
+  }
   }
   
   // Bottom face extrusions (mirrored)
