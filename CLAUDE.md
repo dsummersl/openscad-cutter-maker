@@ -3,8 +3,8 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build Commands
-- Convert image to SVG: `ffmpeg -i input-image.png -vf "format=gray,erosion,lut='if(gt(val,150),0,255)',sobel,lut='if(gt(val,150),0,255)',scale=500:-1" scaled-grayscale.png && convert scaled-grayscale.png scaled-grayscale.pnm && potrace scaled-grayscale.pnm -s -o pattern.svg`
-- Generate STL from OpenSCAD: `openscad -o pattern.stl pattern.scad`
+- invoke svg to convert a PNG of a black and white image to an SVG outline for stamp creation
+- invoke stl - to build the stl from an SVG
 
 ## Code Style Guidelines
 - Use 2-space indentation in OpenSCAD files
