@@ -8,6 +8,6 @@ To generate a pattern you must:
 
 ```sh
 poetry install
-invoke svg
-invoke stl
+invoke svg -i zinnia.png
+invoke stl -i zinnia.svg
 ```
