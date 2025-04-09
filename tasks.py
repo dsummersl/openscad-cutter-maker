@@ -6,13 +6,12 @@ import shutil
 @task
 def svg(
     c,
-    input_image="input.png",
-    output_svg="pattern.svg",
-    output_stl="pattern.stl",
-    scad_file="cookie.scad",
+    input_image="input.png"
 ):
     """Convert an image to SVG and generate a 3D model STL file"""
     temp_dir = ".temp"
+    base_name = os.path.splitext(os.path.basename(input_image))[0]
+    output_svg = os.path.join(os.getcwd(), f"{base_name}.svg")
 
     # Create temporary directory if it doesn't exist
     os.makedirs(temp_dir, exist_ok=True)
