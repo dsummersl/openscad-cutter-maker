@@ -18,16 +18,19 @@ def svg(
 
     print(f"Converting {input_image} to SVG...")
     c.run(
-        f"ffmpeg -i {input_image} -vf \"format=gray,boxblur=10:1,erosion,lut='if(gt(val,150),0,255)',sobel,lut='if(gt(val,150),0,255)',scale=500:-1\" {temp_dir}/scaled-grayscale.png"
+        f"ffmpeg -i {input_image} -vf \"format=gray,boxblur=1:1,erosion,lut='if(gt(val,150),0,255)',sobel,lut='if(gt(val,150),0,255)',scale=500:-1\" -update 1 {temp_dir}/scaled-grayscale.png",
+        echo=True,
     )
-    c.run(f"convert {temp_dir}/scaled-grayscale.png {temp_dir}/scaled-grayscale.pnm")
-    c.run(f"potrace {temp_dir}/scaled-grayscale.pnm -s -a 2 -O 1 -G 1 -o {output_svg}")
+    c.run(f"convert {temp_dir}/scaled-grayscale.png {temp_dir}/scaled-grayscale.pnm", echo=True)
+    c.run(f"potrace {temp_dir}/scaled-grayscale.pnm -s -a 3.0 -O 15 -G 12 --opttolerance 1.5 -o {output_svg}", echo=True)
+    # This would marginally improve the size of the SVG
+    # c.run(f"svgo {output_svg} --precision=1", echo=True)
     print(f"SVG created: {output_svg}")
     shutil.rmtree(temp_dir)
 
 
 @task
-def stl(c, input_svg="pattern.svg", scad_file="cookie.scad"):
+def stl(c, input_svg="pattern.svg", scad_file="cookie.scad", width=2):
     base_name = os.path.splitext(os.path.basename(input_svg))[0]
     output_dir = os.path.join(os.getcwd(), base_name)
     os.makedirs(output_dir, exist_ok=True)
@@ -46,6 +49,17 @@ def stl(c, input_svg="pattern.svg", scad_file="cookie.scad"):
     print(f"STL created: {output_stl} (PNG: {output_png})")
     c.run(f"cat {output_info} | grep Size")
 
+
+@task
+def svg_stl(c, input_image="input.png", scad_file="cookie.scad"):
+    """
+    Convert an input image to an SVG and then to an STL file.
+    """
+    base_name = os.path.splitext(os.path.basename(input_image))[0]
+    output_svg = f"{base_name}.svg"
+
+    svg(c, input_image=input_image)
+    stl(c, input_svg=output_svg, scad_file=scad_file)
 
 @task
 def help(c):
