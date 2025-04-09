@@ -45,6 +45,7 @@ def stl(c, input_svg="pattern.svg", scad_file="cookie.scad"):
     )
 
     print(f"STL created: {output_stl} (PNG: {output_png})")
+    c.run(f"cat {output_info} | grep Size")
 
 
 @task

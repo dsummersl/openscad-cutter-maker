@@ -1,13 +1,17 @@
-// Pottery Stamp Generator - Optimized
-// Parameters for customization
-height = 40;           // Height of each extrusion set
-base_thickness = 4;    // Thickness of the connecting plate
+// OpenSCAD script to create a cookie stamp with a pattern from an SVG file
+
+inch = 25.4;
+
+height = 1 * inch;     // Height of the stamp
+
+base_thickness = 10;    // Thickness of the connecting plate
 outline_offset = 10;   // Distance from original SVG outline for the base plate
-steps = 5;             // Reduced number of steps (can increase once working)
+steps = 10;             // Reduced number of steps (can increase once working)
 step_height = 5;       // Height of each step
 scale_factor = 0.005;  // How much to scale each step
 svg_file = "pattern.svg"; // Input SVG file
-desired_width = 100;   // Desired width of the SVG in mm
+
+desired_width = 2 * inch;   // Desired width of the SVG in mm
 
 // Import the SVG just once and store as a module
 module svg_shape() {
@@ -16,26 +20,21 @@ module svg_shape() {
   }
 }
 
-// Main stamp body
-scale([2, 2, 1]) {
-  // Top face extrusions
-  extruded_shape(steps, step_height, scale_factor, height);
-  extruded_shape(steps, step_height, scale_factor * -1, height);
-  
-  // Base plate using the SVG shape with offset
-  color("Crimson") {
-    translate([0, 0, height]) {
-      linear_extrude(height = base_thickness) {
-        offset(r = outline_offset) {
-          svg_shape();
-        }
+// Base plate using the SVG shape with offset
+color("LightGray") {
+  translate([0, 0, 0]) {
+    linear_extrude(height = base_thickness) {
+      offset(r = outline_offset) {
+        svg_shape();
       }
     }
   }
-  
-  // Bottom face extrusions (mirrored)
+}
+
+// Top face extrusions
+color("LightGreen") {
   rotate([180, 0, 0]) {
-    translate([0, 0, -(height * 2 + base_thickness)]) {
+    translate([0, 0, -(height + base_thickness)]) {
       mirror([0, 1, 0]) {
         extruded_shape(steps, step_height, scale_factor, height);
         extruded_shape(steps, step_height, scale_factor * -1, height);
