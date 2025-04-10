@@ -1,3 +1,19 @@
+# Overview
+
+OpenSCAD scripts to create cookie cutter style stamps from an image.
+
+Take one image that is vaguely black and white for the pattern you want to make a stamp out of:
+
+![](./docs/shoe.png)
+
+The `invoke svg` command turns this into a line drawing:
+
+![](./docs/shoe-svg.png)
+
+The `invoke stl` command turns the SVG into an STL for 3d printing:
+
+![](./docs/shoe-stl.png)
+
 # Install
 
 Dependencies:
