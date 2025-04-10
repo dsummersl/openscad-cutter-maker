@@ -3,6 +3,9 @@ import os
 import shutil
 
 
+OPENSCAD_PATH = os.environ.get("OPENSCAD_PATH", "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD")
+
+
 @task
 def svg(
     c,
@@ -30,20 +33,23 @@ def svg(
 
 
 @task
-def stl(c, input_svg="pattern.svg", scad_file="cookie.scad", width=2):
+def stl(c, output_dir=None, input_svg="pattern.svg", scad_file="cookie.scad", width=2.0):
     base_name = os.path.splitext(os.path.basename(input_svg))[0]
-    output_dir = os.path.join(os.getcwd(), base_name)
+    if output_dir is None:
+        output_dir = os.path.join(os.getcwd(), base_name)
+
     os.makedirs(output_dir, exist_ok=True)
 
     output_stl = os.path.join(output_dir, f"{base_name}.stl")
     output_info = os.path.join(output_dir, f"{base_name}.txt")
+    common_scad = f'{OPENSCAD_PATH} --autocenter --viewall --imgsize=1920,1080 --backend=Manifold -D "width={int(width * 25.4)}" -D "svg_file=\\"{input_svg}\\""'
     c.run(
-        f'/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD --summary bounding-box --backend=Manifold -D "svg_file=\\"{input_svg}\\"" -o {output_stl} {scad_file} 2>&1 | tee {output_info}'
+        f'{common_scad} --summary bounding-box -o {output_stl} {scad_file} 2>&1 | tee {output_info}'
     )
 
     output_png = os.path.join(output_dir, f"{base_name}.png")
     c.run(
-        f'/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD --autocenter --viewall --imgsize=1920,1080 -D "svg_file=\\"{input_svg}\\"" -o {output_png} {scad_file}'
+        f'{common_scad}  -o {output_png} {scad_file}'
     )
 
     print(f"STL created: {output_stl} (PNG: {output_png})")
@@ -51,7 +57,7 @@ def stl(c, input_svg="pattern.svg", scad_file="cookie.scad", width=2):
 
 
 @task
-def svg_stl(c, input_image="input.png", scad_file="cookie.scad"):
+def svg_stl(c, output_dir=None, input_image="input.png", scad_file="cookie.scad", width=2.0):
     """
     Convert an input image to an SVG and then to an STL file.
     """
@@ -59,13 +65,13 @@ def svg_stl(c, input_image="input.png", scad_file="cookie.scad"):
     output_svg = f"{base_name}.svg"
 
     svg(c, input_image=input_image)
-    stl(c, input_svg=output_svg, scad_file=scad_file)
+    stl(c, output_dir=output_dir, input_svg=output_svg, scad_file=scad_file, width=width)
 
 @task
 def help(c):
     """Show usage information"""
     print("Usage:")
-    print("  invoke build -i your-image.png -o our-model.stl")
+    print("  invoke svg-stl -i your-image.png")
     print("")
     print("Options:")
     print("  --input-image: Input PNG image (default: input.png)")

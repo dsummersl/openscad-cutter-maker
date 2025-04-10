@@ -3,10 +3,10 @@ name = "openscad-cutter-maker"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Dane Summers",email = "dsummersl@yahoo.com"}
+    {name = "Dane Summers",email = "dsummersl@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "invoke (>=2.2.0,<3.0.0)"
 ]
