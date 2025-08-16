@@ -20,8 +20,13 @@ def svg(
     os.makedirs(temp_dir, exist_ok=True)
 
     print(f"Converting {input_image} to SVG...")
+    cutoff = 80  # Threshold for LUT filter
+    blur_radius = "1:1"  # Boxblur radius
+    scale_width = 500  # Output image width
+    filters = f"format=gray,boxblur={blur_radius},erosion,lut='if(gt(val,{cutoff}),0,255)',sobel,lut='if(gt(val,{cutoff}),0,255)',scale={scale_width}:-1"
+
     c.run(
-        f"ffmpeg -i {input_image} -vf \"format=gray,boxblur=1:1,erosion,lut='if(gt(val,150),0,255)',sobel,lut='if(gt(val,150),0,255)',scale=500:-1\" -update 1 {temp_dir}/scaled-grayscale.png",
+        f"ffmpeg -i {input_image} -vf \"{filters}\" -update 1 {temp_dir}/scaled-grayscale.png",
         echo=True,
     )
     c.run(f"convert {temp_dir}/scaled-grayscale.png {temp_dir}/scaled-grayscale.pnm", echo=True)
